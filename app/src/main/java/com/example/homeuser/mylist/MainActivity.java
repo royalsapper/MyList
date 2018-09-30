@@ -5,18 +5,49 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    EditText editText;
+    EditText editText2;
+
+    ListView listView;
+    SingerAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView listView = (ListView) findViewById(R.id.listView);
+        editText = (EditText) findViewById(R.id.editText);
+        editText2 = (EditText) findViewById(R.id.editText2);
+
+        Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name = editText.getText().toString();
+                String mobile = editText2.getText().toString();
+
+                adapter.addItem(new SingerItem(name, mobile));
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        listView = (ListView) findViewById(R.id.listView);
+
+        adapter = new SingerAdapter();
+
+        adapter.addItem(new SingerItem("소녀시대", "010-1000-1000"));
+        adapter.addItem(new SingerItem("걸스데이", "010-2000-2000"));
+        adapter.addItem(new SingerItem("에이핑크", "010-3000-3000"));
+
+        listView.setAdapter(adapter);
 
     }
 
@@ -25,22 +56,38 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 0;
+            return items.size();
+        }
+
+        public void addItem(SingerItem item) {
+            items.add(item);
         }
 
         @Override
         public Object getItem(int position) {
-            return null;
+            return items.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            return 0;
+            return position;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+            SingerItemView view = null;
+
+            if (convertView == null) {
+                view = new SingerItemView(getApplicationContext());
+            } else {
+                view = (SingerItemView) convertView;
+            }
+
+            SingerItem item = items.get(position);
+            view.setName(item.getName());
+            view.setMobile(item.getMobile());
+
+            return view;
         }
     }
 
